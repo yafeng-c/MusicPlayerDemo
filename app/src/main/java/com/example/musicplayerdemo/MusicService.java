@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class MusicService extends Service {
 
@@ -16,23 +20,32 @@ public class MusicService extends Service {
     }
 
     public static MediaPlayer mediaPlayer = new MediaPlayer();
+    private int Index = 0;
+    private int musicList = 3;
     public MusicService(){
         initMediaPlayer();
     }
-
+    String[] musicIndex = new String[3];
     public void initMediaPlayer(){
         try {
-            String file_path = "/storage/emulated/0/Music/Last Summer.wav";
-            mediaPlayer.setDataSource(file_path);
+            musicIndex[0] = "/storage/emulated/0/Music/Last Summer.wav";
+            musicIndex[1]="/storage/emulated/0/Music/Dawn.mp3";
+            musicIndex[2]="/storage/emulated/0/Music/夜的钢琴曲二十八.mp3";
+            mediaPlayer.setDataSource(musicIndex[Index]);
             mediaPlayer.prepare();
-            mediaPlayer.setLooping(true);
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    next();
+                }
+            });
 
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void PlayOrPause(){
+    public void playorpause(){
 
         if (mediaPlayer.isPlaying()){
             mediaPlayer.pause();
@@ -51,6 +64,40 @@ public class MusicService extends Service {
             } catch (Exception e){
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void previous() {
+        Index--;
+        if(Index<=0){
+            Toast.makeText(this,"It's the first.",Toast.LENGTH_LONG).show();
+        }
+        else{
+            mediaPlayer.reset();
+            try {
+                mediaPlayer.setDataSource(musicIndex[Index]);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            playorpause();
+        }
+    }
+
+    public void next() {
+        Index++;
+        if(Index>=musicList){
+            Toast.makeText(this,"It's the last.",Toast.LENGTH_LONG).show();
+        }
+        else{
+            mediaPlayer.reset();
+            try {
+                mediaPlayer.setDataSource(musicIndex[Index]);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            playorpause();
         }
     }
 

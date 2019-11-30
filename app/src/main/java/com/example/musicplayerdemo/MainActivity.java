@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -16,12 +17,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -31,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button isPlay;
     private Button stop;
-    private Button pause;
+    private Button previous;
+    private Button next;
 
     private TextView totalTime;
     private TextView playingTime;
@@ -51,8 +50,11 @@ public class MainActivity extends AppCompatActivity {
         stop = (Button) findViewById(R.id.Stop);
         stop.setOnClickListener(new myOnClickListener());
 
-        pause = (Button) findViewById(R.id.Pause);
-        pause.setOnClickListener(new myOnClickListener());
+        previous = (Button) findViewById(R.id.Previous);
+        previous.setOnClickListener(new myOnClickListener());
+
+        next = (Button) findViewById(R.id.Next);
+        next.setOnClickListener(new myOnClickListener());
 
         seekBar = (SeekBar) findViewById(R.id.seekbar);
         seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         totalTime = (TextView) findViewById(R.id.totalTime);
         playingTime = (TextView) findViewById(R.id.playingTime);
+
 
     }
 
@@ -91,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
 
             isPlay.setOnClickListener(new myOnClickListener());
             stop.setOnClickListener(new myOnClickListener());
-            pause.setOnClickListener(new myOnClickListener());
+            previous.setOnClickListener(new myOnClickListener());
+            next.setOnClickListener(new myOnClickListener());
 
             playingTime.setText(time.format(musicService.mediaPlayer.getCurrentPosition()));
             totalTime.setText(time.format(musicService.mediaPlayer.getDuration()));
@@ -152,11 +156,17 @@ public class MainActivity extends AppCompatActivity {
             switch(v.getId()){
                 case R.id.Play:
                     changePlay();
-                    musicService.PlayOrPause();
+                    musicService.playorpause();
                     break;
                 case R.id.Stop:
                     musicService.stop();
                     changeStop();
+                    break;
+                case R.id.Previous:
+                    musicService.previous();
+                    break;
+                case R.id.Next:
+                    musicService.next();
                     break;
                 default:
                     break;
@@ -173,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         if(musicService.mediaPlayer.isPlaying()){
             isPlay.setText("Play");
         }else{
-            isPlay.setText("Paused");
+            isPlay.setText("Pause");
         }
     }
 
